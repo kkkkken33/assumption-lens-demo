@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Assumption Lens · 交互演示</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand"><div class="brand-mark">◈</div><div><strong>Assumption Lens</strong><small>人机协作 · 任务理解校准</small></div></div>
+      <div class="top-right"><span id="connection" class="connection">● 正在连接</span><span class="model" id="model">模型服务</span></div>
+    </header>
+    <div class="share-bar"><div class="share-icon">↗</div><div class="share-info"><strong id="shareStatus">正在创建分享链接</strong><input id="shareUrl" class="share-link" aria-label="分享网址" readonly value="启动后会在这里显示可分享的网址"></div><button id="copyShare" class="share-copy" disabled>复制分享网址</button></div>
+    <div id="authNotice" class="auth-notice hidden" role="alert"><strong>当前链接无法访问模型</strong><span id="authMessage">请从本次启动窗口复制完整网址，或使用启动后新打开的浏览器标签页。旧标签页的访问码会失效。</span></div>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy"><div class="eyebrow"><span class="eyebrow-line"></span> 基于 NeuroSync 的交互研究原型</div><h1>看清模型的理解，<br><em>再开始生成代码。</em></h1><p>同一项编程需求，三种不同的审查方式。用分层任务图同时掌握整体架构、内部步骤与结构变更的影响。</p><div class="hero-tags"><span>01 输入需求</span><span>02 审查理解</span><span>03 生成代码</span></div></div>
+        <div class="hero-visual" aria-label="从需求到任务图、假设审查和代码的流程图"><div class="visual-grid"></div><div class="visual-glow"></div><div class="visual-input"><span>用户需求</span><i></i><i></i><i></i></div><div class="visual-beam beam-one"></div><div class="visual-node node-a"><span>01</span><b>读取数据</b></div><div class="visual-node node-b"><span>02</span><b>处理缺失值</b></div><div class="visual-node node-c"><span>03</span><b>计算平均值</b></div><div class="visual-line line-one"></div><div class="visual-line line-two"></div><div class="visual-lens"><div class="lens-orbit"></div><div class="lens-core">⌕</div><div class="lens-caption"><small>ASSUMPTION</small><strong>排除缺失值</strong><em>细节可展开</em></div></div><div class="visual-output"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span><div><i></i><i></i><i></i></div></div><div class="visual-label">总览 → 细节 → 生成</div></div>
+      </section>
+
+      <section class="request panel">
+        <div class="section-heading"><div><span class="kicker">01 / 输入需求</span><h2>描述你想完成的任务</h2></div><button id="sample" class="quiet">载入示例</button></div>
+        <textarea id="request" rows="4" placeholder="描述一个需要用程序解决的问题…">请写一个 Python 程序读取 CSV 销售数据。缺失的销售额保持缺失，计算平均值时排除缺失值；输出平均值和有效数据条数。请用 [10, 缺失, 20] 演示。</textarea>
+        <div class="input-footer"><span><span class="status-dot"></span> Assumption Lens 会先生成可审查的任务计划</span><button id="analyze" class="primary">分析需求 <b>↗</b></button></div>
+      </section>
+
+      <section id="workspace" class="workspace hidden">
+        <div class="section-heading comparison-heading"><div><span class="kicker">02 / 审查理解</span><h2>用不同方式观察同一份计划</h2></div><span class="subtle">各模式从同一初始计划独立开始</span></div>
+        <div class="tabs" role="tablist"><button class="tab active" data-mode="text"><span class="tab-icon text-icon"><i></i><i></i><i></i></span><span class="tab-copy"><small>方法 A</small><strong>文字计划</strong><em>线性阅读与修改</em></span></button><button class="tab" data-mode="graph"><span class="tab-icon graph-icon"><i></i><i></i><i></i></span><span class="tab-copy"><small>方法 B</small><strong>任务图</strong><em>操作节点与依赖</em></span></button><button class="tab" data-mode="lens"><span class="tab-icon lens-icon">⌕</span><span class="tab-copy"><small>方法 C · 我们的方法</small><strong>Assumption Lens</strong><em>分层结构与影响</em></span></button></div>
+
+        <div class="review-layout">
+          <div class="main-panel panel">
+            <div id="textView" class="view"><div class="view-top"><div><span class="kicker">方法 A / 文字</span><h3>逐条检查任务计划</h3></div><span class="hint">直接修改计划文本</span></div><p class="view-intro">模型的理解被排列为线性步骤。你可以直接修改内容，修改后的计划会用于代码生成。</p><textarea id="textPlan" class="plan-text" spellcheck="false"></textarea><button id="saveText" class="secondary">应用文字修改</button></div>
+            <div id="graphView" class="view hidden"><div class="view-top"><div><span class="kicker">方法 B / 任务图</span><h3>直接编辑任务关系</h3></div><span class="hint">拖动节点与连线端点</span></div><p class="view-intro">从节点右侧圆点拖到另一个节点左侧圆点即可连线。点击连线可拖动端点重新连接，或直接删除。</p><div class="graph-toolbar"><button id="addNode" class="secondary small">＋ 添加节点</button><button id="resetLayout" class="quiet small">自动布局</button></div><div id="graphCanvas" class="graph-canvas"><svg id="edges" aria-label="可编辑的任务依赖连线"></svg><div id="nodes"></div><div id="edgeTools" class="edge-tools hidden"><span id="edgeName"></span><button id="deleteEdge" class="edge-delete" aria-label="删除选中连线">删除连线 ×</button></div></div><div id="nodeEditor" class="node-editor hidden"><div class="section-heading"><h4>编辑节点</h4><button id="closeEditor" class="icon-button" aria-label="关闭">×</button></div><label>任务名称<input id="nodeLabel"></label><label>具体行为<textarea id="nodeDetail" rows="3"></textarea></label><div class="editor-actions"><button id="deleteNode" class="danger">删除节点</button><button id="saveNode" class="primary">保存修改</button></div></div></div>
+            <div id="lensView" class="view hidden"><div class="view-top"><div><span class="kicker">方法 C / ASSUMPTION LENS</span><h3>分层任务图</h3></div><span class="hint">结构审查 → 决策审核 → 节点追问</span></div><p class="view-intro">关键结构可以由你调整；删除或改变原有顺序前，Assumption Lens 会提示可能的影响。黄色节点表示有待办决策，采用方案后恢复正常；点击模块或步骤，可在右侧查看细节并向 Assumption Lens 追问。下方记录结构变更。</p><div class="lens-layout lens-v2"><div><div class="graph-toolbar"><button id="addLensModule" class="secondary small">＋ 添加模块</button></div><div id="lensTree" class="lens-overview"><svg id="lensEdges" aria-label="模块关系图"></svg><div id="lensNodes"></div></div></div><aside id="lensInspector" class="lens-inspector"><div class="inspector-empty"><span>⌕</span><strong>选择一个模块</strong><p>点击左侧方框，在这里查看模块中的步骤、关系和实现决策。</p></div></aside></div><div id="lensImpactFeed" class="lens-impact-feed"><span class="kicker">操作日志</span><p>新增、修改、删除记录会显示在这里；需要追问时请使用节点旁的对话窗口。</p></div></div>
+          </div>
+          <aside class="side-panel"><div class="panel snapshot"><span class="kicker">原始需求 / SOURCE</span><h3>对照用户意图</h3><p id="sourceText"></p></div><div class="panel status-panel"><span class="kicker">审查状态 / STATUS</span><h3 id="statusTitle">等待审查</h3><p id="statusText">选择一种方式，直接修改模型计划。</p><div id="stats" class="stats"></div></div></aside>
+        </div>
+
+        <div class="panel action-panel"><div><span class="kicker">03 / 生成</span><h3>将审查后的理解转为代码</h3><p>Assumption Lens 会将当前分层任务图用于生成；结构编辑的 AI 解释会显示在上方。</p></div><div class="action-buttons"><button id="generate" class="primary">确认并生成代码 <b>↗</b></button></div></div>
+        <section id="outputPanel" class="panel result hidden"><div class="section-heading"><div><span class="kicker">代码结果</span><h3>生成结果</h3></div><button id="copyOutput" class="quiet">复制结果</button></div><pre id="output"></pre></section>
+      </section>
+    </main>
+    <footer>Assumption Lens · 研究演示原型 <span>模型输出需要人工确认；生成的代码不会在服务器上执行。</span></footer>
+  </div>
+  <div id="loading" class="loading-overlay hidden" role="status" aria-live="polite"><div class="loading-card"><div class="loading-art"><span class="loading-ring ring-a"></span><span class="loading-ring ring-b"></span><span class="loading-center">◈</span><span class="loading-particle p1"></span><span class="loading-particle p2"></span><span class="loading-particle p3"></span></div><div class="kicker">ASSUMPTION LENS · 任务理解校准</div><h3 id="loadingTitle">正在分析需求</h3><p>模型正在处理你的任务。完成后可以直接操作分层任务图。</p><div class="loading-track"><i></i></div></div></div>
+  <div id="toast" class="toast" role="status"></div>
+  <div id="criticalWarning" class="critical-warning hidden" role="dialog" aria-modal="true" aria-labelledby="criticalWarningTitle"><div class="critical-warning-card"><span class="critical-warning-icon">!</span><span class="kicker">关键结构提醒</span><h3 id="criticalWarningTitle"></h3><p id="criticalWarningText"></p><div class="critical-warning-actions"><button id="criticalCancel" class="quiet">返回检查</button><button id="criticalProceed" class="danger">仍要继续</button></div></div></div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

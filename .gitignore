@@ -1,0 +1,22 @@
+# Credentials and local session data
+.deepseek-key.dpapi
+.env
+.env.*
+!.env.example
+.share-url*
+*.log
+
+# Downloaded binaries and local environments
+tools/
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Link to the paper instead of redistributing its PDF
+NeuroSync.pdf
+
+# Local course notes unrelated to the runnable demo
+codex-week12-evidence-*.png
+discussion.txt
